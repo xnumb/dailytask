@@ -1,0 +1,175 @@
+@import url("./reset.css");
+@import url("./vscode.css");
+body {
+  background-color: transparent;
+  font-size: 12px;
+  height: 99vh;
+  overflow: hidden;
+  display: flex;
+  user-select: none;
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+
+.daily {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 0 10px;
+}
+.daily .tag {
+  margin-right: 4px;
+  color: #999;
+  text-align: center;
+  font-size: 12px;
+}
+.daily .tag.tag-blue {
+  color: #007faf;
+}
+.daily .tag.tag-red {
+  color: #c9444a;
+}
+.daily .tag.tag-green {
+  color: #007a39;
+}
+.daily .tag.tag-orange {
+  color: #c48845;
+}
+.daily .tag.tag-yellow {
+  color: #d8d540;
+}
+.daily .block_on {
+  flex: 1;
+  background: #00b477;
+}
+.daily .block_off {
+  flex: 1;
+}
+.daily .list {
+  flex: 1;
+}
+.daily .list .msg {
+  height: 48px;
+  line-height: 48px;
+  text-align: center;
+  color: #999;
+  background: #333;
+  border-radius: 4px;
+}
+.daily .list .item {
+  margin-bottom: 10px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.daily .list .item.active .block_on {
+  background: #00ffea !important;
+}
+.daily .list .item.active .task {
+  background-image: linear-gradient(315deg, #2a32a5 0, #00a193 100%);
+}
+.daily .list .item.active .task .more {
+  color: #ddd !important;
+}
+.daily .list .item.active .task .more .btn {
+  color: #999 !important;
+}
+.daily .list .item.active .task .more .btn:hover {
+  color: #ddd !important;
+}
+.daily .list .item.active .task .action {
+  color: #999 !important;
+}
+.daily .list .item.active .task .action:hover {
+  color: #ddd !important;
+}
+.daily .list .item .task {
+  background: #333;
+  overflow: hidden;
+  display: flex;
+  padding: 6px 8px;
+}
+.daily .list .item .task .info {
+  flex: 1;
+  width: 0;
+}
+.daily .list .item .task .info .title {
+  height: 21px;
+  line-height: 21px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.daily .list .item .task .info .more {
+  color: #999;
+  height: 21px;
+  line-height: 21px;
+  display: flex;
+}
+.daily .list .item .task .info .more .tm {
+  flex: 1;
+}
+.daily .list .item .task .info .more .btn {
+  width: 21px;
+  color: #444;
+  cursor: pointer;
+}
+.daily .list .item .task .info .more .btn:hover {
+  color: #ccc;
+}
+.daily .list .item .task .action {
+  width: 24px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  color: #444;
+  cursor: pointer;
+}
+.daily .list .item .task .action:hover {
+  color: #ccc;
+}
+.daily .list .item .task .action.action-done {
+  color: #00b477;
+}
+.daily .list .item .task .action.action-done:hover {
+  color: #00b477;
+}
+.daily .list .item .progress {
+  display: flex;
+  flex-direction: row;
+  height: 4px;
+  background: #1c1c1c;
+}
+.daily .total {
+  background: #1c1c1c;
+  border-radius: 4px;
+  overflow: hidden;
+  height: 24px;
+  line-height: 24px;
+  position: relative;
+  margin: 10px 0;
+  display: flex;
+}
+.daily .total .v {
+  flex: 1;
+  text-align: center;
+  z-index: 1;
+  position: relative;
+}
+.daily .total .progress {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 24px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+/*# sourceMappingURL=main.css.map */

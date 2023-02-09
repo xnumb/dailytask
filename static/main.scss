@@ -1,0 +1,179 @@
+@import url('./reset.css');
+@import url('./vscode.css');
+
+$progressBg: #1c1c1c;
+$progressColor: #00b477;
+$nowBg: #333;
+$tagGray: #999;
+$tagBlue: #007faf;
+$tagRed: #c9444a;
+$tagGreen: #007a39;
+$tagOrange: #c48845;
+$tagYellow: #d8d540;
+$borderColor: #333;
+$radiusSize: 4px;
+$linear: linear-gradient(315deg, #2a32a5 0, #00a193 100%);
+
+body {
+  background-color: transparent;
+  font-size: 12px;
+  height: 99vh;
+  overflow: hidden;
+  display: flex;
+  user-select:none;
+}
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+
+.daily {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 0 10px;
+  .tag {
+    margin-right: 4px;
+    color: $tagGray;
+    text-align: center;
+    font-size: 12px;
+    &.tag-blue { color: $tagBlue; }
+    &.tag-red { color: $tagRed; }
+    &.tag-green { color: $tagGreen; }
+    &.tag-orange { color: $tagOrange; }
+    &.tag-yellow { color: $tagYellow; }
+  }
+  .block_on {
+    flex: 1;
+    background: $progressColor;
+  }
+  .block_off {
+    flex: 1;
+  }
+  .list {
+    flex: 1;
+    .msg {
+      height: 48px;
+      line-height: 48px;
+      text-align: center;
+      color: #999;
+      background: $nowBg;
+      border-radius: $radiusSize;
+    }
+    .item {
+      margin-bottom: 10px;
+      border-radius: $radiusSize;
+      overflow: hidden;
+      &.active {
+        .block_on {
+          background: #00ffea !important;
+        }
+        .task {
+          background-image: $linear;
+          .more {
+            color: #ddd !important;
+            .btn {
+              color: #999 !important;
+              &:hover {
+                color: #ddd!important;
+              }
+            }
+          }
+          .action {
+            color: #999 !important;
+            &:hover {
+              color: #ddd!important;
+            }
+          }
+        }
+      } 
+      .task {
+        background: $nowBg;
+        overflow: hidden;
+        display: flex;
+        padding: 6px 8px;
+        .info {
+          flex: 1;
+          width: 0;
+          .title {
+            height: 21px;
+            line-height: 21px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .more {
+            color: #999;
+            height: 21px;
+            line-height: 21px;
+            display: flex;
+            .tm {
+              flex: 1;
+            }
+            .btn {
+              width: 21px;
+              color: #444;
+              cursor: pointer;
+              &:hover {
+                color: #ccc;
+              }
+            }
+          }
+        }
+        .action {
+          width: 24px;
+          justify-content: center;
+          align-items: center;
+          display: flex;
+          color: #444;
+          cursor: pointer;
+          &:hover {
+            color: #ccc;
+          }
+          &.action-done {
+            color: $progressColor;
+            &:hover {
+              color: $progressColor;
+            }
+          }
+        }
+      }
+      .progress {
+        display: flex;
+        flex-direction: row;
+        height: 4px;
+        background: $progressBg;
+      }
+    }
+  }
+  
+  .total {
+    background: $progressBg;
+    border-radius: 4px;
+    overflow: hidden;
+    height: 24px;
+    line-height: 24px;
+    position: relative;
+    margin: 10px 0;
+    display: flex;
+    .v {
+      flex: 1;
+      text-align: center;
+      z-index: 1;
+      position: relative;
+    }
+    .progress {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      height: 24px;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+    }
+  }
+}
