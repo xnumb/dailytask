@@ -1,6 +1,6 @@
 # dailytask README
 
-![intro.png](https://i.postimg.cc/mkKr33Lt/Screenshot-2023-02-12-at-01-51-44.png)
+![intro.png](https://i.postimg.cc/ZKpBpXVD/Screenshot-2023-02-12-at-02-06-49.png)
 
 ## tagColor
 - x: gray
