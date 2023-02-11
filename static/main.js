@@ -20,8 +20,11 @@
     window.addEventListener('message', e => {
       const msg = e.data
       switch(msg.type) {
-        case 'insert':
-          insert(msg.cmd)
+        case 'updateTimer':
+          updateTimer()
+          break
+        case 'add':
+          add(msg.cmd)
           break
         case 'del':
           del(msg.id)
@@ -43,20 +46,46 @@
           break
       }
     })
-    buildList(true)
+    build()
+  }
+  function updateTimer() {
     if (GlobalData.active) {
-      startTimer()
+      GlobalData.list.forEach(item => {
+        if (item.id == GlobalData.active) {
+          let s = parseInt((new Date()).getTime() / 1000)
+          item.sec += s - item.ts
+          item.ts = s
+        }
+      })
+      save()
     }
   }
-  // main
-  function buildList() {
+  // build
+  function taskAction(idx, action) {
+    let task = GlobalData.list[idx]
+    if (action == 'more') {
+      vscode.postMessage({
+        id: task.id,
+        action: 'more',
+        cmd: task.cmd
+      })
+    } else if (action == 'play') {
+      GlobalData.active = task.id
+      task.ts = parseInt((new Date()).getTime() / 1000)
+      save()
+    } else if (action == 'pause') {
+      GlobalData.active = ''
+      save()
+    }
+  }
+  function build() {
     let html = ''
-    for (let i in GlobalData.list) {
-      let task = GlobalData.list[i]
+    let taskList = GlobalData.list
+    taskList.forEach( task => {
       let actionHtml = ''
       let activeHtml = ''
       if (GlobalData.active == task.id) {
-        actionHtml = `<div class="action action-pause" data-id="${task.id}">
+        actionHtml = `<div class="action btn" data-action="pause" data-id="${task.id}">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-pause"></use>
             </svg>
@@ -70,7 +99,7 @@
             </svg>
           </div>`
         } else {
-          actionHtml = `<div class="action action-play" data-id="${task.id}">
+          actionHtml = `<div class="action btn" data-action="play" data-id="${task.id}">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-play"></use>
             </svg>
@@ -95,7 +124,7 @@
                 </svg>
                 ${parseInt(task.sec/60)}/${task.duration}
               </div>
-              <div class="btn btn-more" data-id="${task.id}">
+              <div class="btn" data-action="more" data-id="${task.id}">
                 <svg class="icon" aria-hidden="true">
                   <use xlink:href="#icon-more"></use>
                 </svg>
@@ -106,52 +135,38 @@
         </div>
         <div class="progress" id="progress-${task.id}"></div>
       </div>`
-    }
+    })
     if (html == '') {
       html = '<div class="msg">NO TASK</div>'
     }
     getDom('list').innerHTML = html
-    if (GlobalData.list.length > 0) {
-      getClass('btn-more').forEach(item => {
+    if (taskList.length > 0) {
+      getClass('btn').forEach(item => {
         item.addEventListener('click', _ => {
-          let itemId = item.getAttribute('data-id')
-          for(let i in GlobalData.list) {
-            if (GlobalData.list[i].id == itemId) {
-              vscode.postMessage({
-                id: itemId,
-                action: 'more',
-                cmd: GlobalData.list[i].cmd
-              })
+          for (let i in taskList) {
+            if (taskList[i].id == item.getAttribute('data-id')) {
+              taskAction(i, item.getAttribute('data-action'))
               break
             }
           }
         })
       })
-      getClass('action-pause').forEach(item => {
-        item.addEventListener('click', _ => {
-          clearInterval(timer)
-          GlobalData.active = ''
-          save()
-        })
-      })
-      getClass('action-play').forEach(item => {
-        item.addEventListener('click', _ => {
-          let itemId = item.getAttribute('data-id')
-          clearInterval(timer)
-          GlobalData.active = itemId
-          save()
-          startTimer()
-        })
-      })
     }
-    refreshProgress()
+    updateProgress()
   }
-  function refreshProgress() {
+  function updateProgress() {
     let totalMin = 0
     let doneMin = 0
     GlobalData.list.forEach(item => {
       doneMin += item.sec*1
       totalMin += item.duration*1
+      if (item.id == GlobalData.active && item.sec >= item.duration * 60) {
+        GlobalData.active = ''
+        item.sec = item.duration * 60
+        alertMsg('Done: ' + item.title)
+        save()
+        return
+      }
       getDom('progress-' + item.id).innerHTML = buildProgress(parseInt(item.sec/60), item.duration*1)
     })
     doneMin = parseInt(doneMin/60)
@@ -159,51 +174,26 @@
     getDom('total-progress').innerHTML = buildProgress(doneMin, totalMin)
   }
   function buildProgress(a, b) {
-    let n = b == 0 ? 0 : parseInt((a / b) * 100)
+    let n = (a == 0 || b == 0) ? 0 : parseInt(a*100 / b)
+    n = n > 100 ? 100 : n
     let html = ''
-    for (let i = 0; i < 100; i++) {
-      if (i < n) {
-        html += '<div class="block_on"></div>'
-      } else {
-        html += '<div class="block_off"></div>'
-      }
+    if (n == 0) {
+      html = '<div class="flex-1"></div>'
+    } else if (n == 100) {
+      html = '<div class="block_on flex-1"></div>'
+    } else {
+      html = `<div class="block_on flex-${n}"></div>`
+      html += `<div class="flex-${100-n}"></div>`
     }
     return html
   }
-  function startTimer() {
-    const sec = 5
-    let loop = 0
-    timer = setInterval(_ => {
-      loop++
-      if (GlobalData.active) {
-        GlobalData.list.forEach(item => {
-          if (item.id == GlobalData.active) {
-            if (item.sec >= item.duration*60) {
-              GlobalData.active = ''
-              item.sec = item.duration*60
-              save()
-              alertMsg('Done: ' + item.title)
-              clearInterval(timer)
-            } else {
-              item.sec += sec
-              if (loop%12 == 0) {
-                save()
-              }
-            }
-          }
-        })
-      } else {
-        clearInterval(timer)
-      }
-    }, sec*1000);
-  }
   // action
-  function insert(cmd) {
+  function add(cmd) {
     if (GlobalData.list.length >= 16) {
       alertMsg('Warning: max task count', 'warn')
       return
     }
-    let task = getCmdTask(cmd, 0)
+    let task = parseCmd(cmd, 0)
     if (task.success) {
       GlobalData.list.push(task.content)
       save()
@@ -221,15 +211,16 @@
     }
   }
   function edit(id, cmd) {
-    let task = getCmdTask(cmd, id)
+    let task = parseCmd(cmd, id)
     if (task.success) {
-      for(let i in GlobalData.list) {
-        if (GlobalData.list[i].id == id) {
-          GlobalData.list[i] = task.content
-          break
+      GlobalData.list.forEach(item => {
+        if (item.id == id) {
+          task.content.sec = item.sec
+          item = task.content
+          save()
+          return
         }
-      }
-      save()
+      })
     } else {
       alertMsg(task.errMsg, 'warn')
     }
@@ -239,9 +230,10 @@
       alertMsg('Invalid Time Value', 'warn')
       return
     }
-    for (let i in GlobalData.list) {
-      if (GlobalData.list[i].id == id) {
-        GlobalData.list[i].sec = min*60
+    let taskList = GlobalData.list
+    for (let i in taskList) {
+      if (taskList[i].id == id) {
+        taskList[i].sec = min > taskList[i].duration ? taskList[i].duration*60 : min*60
         break
       }
     }
@@ -277,7 +269,6 @@
       list: [],
       active: ''
     }
-    clearInterval(timer)
     save()
   }
   function reset() {
@@ -285,13 +276,12 @@
       GlobalData.list[i].sec = 0
     }
     GlobalData.active = ''
-    clearInterval(timer)
     save()
   }
   // tool
   function save() {
     vscode.setState(GlobalData)
-    buildList()
+    build()
   }
   function getDom(id) {
     return document.querySelector('#' + id)
@@ -299,7 +289,7 @@
   function getClass(id) {
     return document.querySelectorAll('.' + id)
   }
-  function getCmdTask(cmd, id) {
+  function parseCmd(cmd, id) {
     let cmds = cmd.split('#')
     if (cmds.length != 3) {
       return { success: false, errMsg: 'Invalid Format' }
@@ -319,7 +309,8 @@
         tag: COLORS[cmds[0]],
         title: cmds[1],
         duration: min,
-        sec: 0
+        sec: 0,
+        ts: 0,
       }
     }
   }

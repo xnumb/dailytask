@@ -2,7 +2,8 @@
   "name": "dailytask",
   "displayName": "DailyTask",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
+	"publisher": "xnumb",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -38,9 +39,9 @@
     },
     "commands": [
       {
-        "command": "dailyTask.insert",
+        "command": "dailyTask.add",
         "category": "dailyTask",
-        "title": "insert",
+        "title": "add",
         "icon": "$(add)"
       },
       {
@@ -59,7 +60,7 @@
     "menus": {
       "view/title": [
         {
-          "command": "dailyTask.insert",
+          "command": "dailyTask.add",
           "group": "navigation",
           "when": "view == dailyTask.countdown"
         },
@@ -70,6 +71,10 @@
         }
       ]
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:xnumb/dailytask.git"
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",

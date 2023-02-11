@@ -47,12 +47,13 @@ body {
     &.tag-orange { color: $tagOrange; }
     &.tag-yellow { color: $tagYellow; }
   }
-  .block_on {
-    flex: 1;
-    background: $progressColor;
+  @for $i from 0 through 100 {
+    .flex-#{$i} {
+      flex: $i;
+    }
   }
-  .block_off {
-    flex: 1;
+  .block_on {
+    background: $progressColor;
   }
   .list {
     flex: 1;

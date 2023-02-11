@@ -3,8 +3,8 @@ import * as vscode from 'vscode';
 export function activate(context: vscode.ExtensionContext) {
 	const provider = new DailyTaskProvider(context.extensionUri);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(DailyTaskProvider.viewType, provider));
-	context.subscriptions.push(vscode.commands.registerCommand('dailyTask.insert', _ => {
-		provider.insert()
+	context.subscriptions.push(vscode.commands.registerCommand('dailyTask.add', _ => {
+		provider.add()
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('dailyTask.reset', _ => {
 		provider.reset()
@@ -30,7 +30,6 @@ class DailyTaskProvider implements vscode.WebviewViewProvider {
 		_token: vscode.CancellationToken,
 	) {
 		this._view = webviewView;
-		console.log(this._view)
 
 		webviewView.webview.options = {
 			// Allow scripts in the webview
@@ -56,19 +55,25 @@ class DailyTaskProvider implements vscode.WebviewViewProvider {
 				this.more(data.id, data.cmd)
 			}
 		});
+		let timer = setInterval( _ => {
+			webviewView.webview.postMessage({ type: 'updateTimer' })
+		}, 1000)
+		webviewView.onDidDispose( _ => {
+			clearInterval(timer)
+		})
 	}
 
-	public insert() {
+	public add() {
 		if (this._view) {
 			let self = this._view
 			vscode.window.showInputBox({
 				password: false,
 				ignoreFocusOut: true,
-				placeHolder: 'insert task. eg: b#workName#20',
+				placeHolder: 'add task. eg: b#workName#20',
 				prompt: 'color(x,b,r,g,o,y)#taskName#duration(min)',
 			}).then(res => {
 				self.webview.postMessage({
-					type: 'insert',
+					type: 'add',
 					cmd: res
 				})
 			})
@@ -147,7 +152,7 @@ class DailyTaskProvider implements vscode.WebviewViewProvider {
 				ignoreFocusOut: true,
 				value: cmd,
 				placeHolder: 'edit task',
-				prompt: 'The rules are the same as insert tasks',
+				prompt: 'The rules are the same as add tasks',
 			}).then(res => {
 				self.webview.postMessage({
 					type: 'edit',
