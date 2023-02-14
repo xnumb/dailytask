@@ -1,8 +1,8 @@
 {
   "name": "dailytask",
   "displayName": "DailyTask",
-  "description": "",
-  "version": "0.1.0",
+  "description": "Focus on your daily tasks.",
+  "version": "0.1.1",
 	"publisher": "xnumb",
   "engines": {
     "vscode": "^1.75.0"

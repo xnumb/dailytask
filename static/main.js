@@ -213,14 +213,14 @@
   function edit(id, cmd) {
     let task = parseCmd(cmd, id)
     if (task.success) {
-      GlobalData.list.forEach(item => {
-        if (item.id == id) {
-          task.content.sec = item.sec
-          item = task.content
+      for(let i in GlobalData.list) {
+        if (GlobalData.list[i].id == id) {
+          task.content.sec = GlobalData.list[i].sec
+          GlobalData.list[i] = task.content
           save()
           return
         }
-      })
+      }
     } else {
       alertMsg(task.errMsg, 'warn')
     }
